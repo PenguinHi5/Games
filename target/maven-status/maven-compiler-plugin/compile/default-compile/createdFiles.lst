@@ -1,0 +1,9 @@
+game\GameManager.class
+game\Game.class
+game\common\GameState.class
+game\Games.class
+game\common\ColorTeamNames.class
+game\scoreboard\ScoreboardController.class
+game\common\GameMode.class
+game\SoloGame.class
+game\common\RandomTeamNames.class
