@@ -7,26 +7,28 @@
     <groupId>io.github.penguinhi5</groupId>
     <artifactId>games</artifactId>
     <version>0.1.1</version>
-
+<!--
     <repositories>
         <repository>
             <id>core</id>
-            <url>http://localhost:8082/artifactory/libs-release-local/com/chromawolf/core/core/0.1.1</url>
+            <url>http://localhost:8082/artifactory/libs-release-local/com/chromawolf/core/core/0.1.1/</url>
         </repository>
     </repositories>
-
+-->
     <dependencies>
-        <!-- <dependency>
+        <!--<dependency>
             <groupId>com.chromawolf.core</groupId>
             <artifactId>core</artifactId>
             <version>0.1.1</version>
             <scope>system</scope>
-            <systemPath>${basedir}/lib/core-0.1.1.jar</systemPath>
-        </dependency> -->
+            <systemPath>${basedir}/lib/Core.jar</systemPath>
+        </dependency>-->
         <dependency>
             <groupId>com.chromawolf.core</groupId>
             <artifactId>core</artifactId>
             <version>0.1.1</version>
+            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -66,22 +68,9 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin> -->
+            <!-- other Maven plugins ... -->
+
+
         </plugins>
     </build>
 

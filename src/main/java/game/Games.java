@@ -6,6 +6,7 @@ import core.minecraft.combat.CombatManager;
 import core.minecraft.command.CommandManager;
 import core.minecraft.cooldown.Cooldown;
 import core.minecraft.damage.DamageManager;
+import core.minecraft.hologram.HologramManager;
 import core.minecraft.inventory.InventoryManager;
 import core.minecraft.region.RegionManager;
 import core.minecraft.scoreboard.ScoreManager;
@@ -21,6 +22,12 @@ import core.redis.data.MinecraftServer;
 import core.redis.data.ServerType;
 import core.redis.message.RedisMessageManager;
 import core.redis.repository.ServerRepository;
+import game.scoreboard.ScoreboardController;
+import game.settings.GameSettingsManager;
+import game.sound.SoundManager;
+import game.team.TeamManager;
+import game.world.GameWorldManager;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.BufferedReader;
@@ -33,10 +40,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
-public class Games extends JavaPlugin {
+public class Games extends JavaPlugin
+{
 
     public void onEnable()
     {
+        // Core
         CommandManager commandManager = new CommandManager(this);
         Cooldown.initializeCooldown(this);
         String name = this.generateServers();
@@ -51,8 +60,15 @@ public class Games extends JavaPlugin {
         new Timer(this, commandManager);
         new ChatManager(this, clientManager, commandManager);
         ScoreManager scoreManager = new ScoreManager(this, commandManager);
+        HologramManager hologramManager = new HologramManager(this, commandManager);
 
-        GameManager gameManager = new GameManager(this, commandManager, scoreManager, transactionManager, worldManager);
+        // Games
+        GameSettingsManager gameSettingsManager = new GameSettingsManager(this, commandManager);
+        SoundManager soundManager = new SoundManager(this, commandManager);
+        GameManager gameManager = new GameManager(this, commandManager, scoreManager, transactionManager,
+                worldManager, gameSettingsManager, soundManager, damageManager, hologramManager, regionManager);
+        GameWorldManager gameWorldManager = new GameWorldManager(this, commandManager, worldManager, gameManager);
+        ScoreboardController scoreboardController = new ScoreboardController(this, commandManager, scoreManager, transactionManager, gameManager);
     }
 
     // TODO -=-=-=-=-=-=-=-=-=-=-=-= EVERYTHIN BELOW IS TEMPORARY FOR TESTING =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
