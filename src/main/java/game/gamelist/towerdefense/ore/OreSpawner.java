@@ -1,18 +1,22 @@
 package game.gamelist.towerdefense.ore;
 
+import core.minecraft.cooldown.Cooldown;
+import core.minecraft.cooldown.event.CooldownCompletedEvent;
 import core.minecraft.world.config.MapConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class OreSpawner
+public class OreSpawner implements Listener
 {
 
     private ArrayList<Block> _team1Iron;
@@ -40,8 +44,11 @@ public class OreSpawner
     public final static double COAL_SPAWN_RATE = 0.25f;
     public final static double GRAVEL_SPAWN_RATE = 0.35f;
 
+    public final static String COAL_ORE_RESPAWN = "towerdefense.regen.coal";
+
     public OreSpawner(JavaPlugin plugin, MapConfig map)
     {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
         _plugin = plugin;
         _map = map;
 
@@ -57,6 +64,9 @@ public class OreSpawner
         spawnGravel();
         spawnDiamond();
         spawnCoal();
+
+        // Regen Coal
+        Cooldown.getInstance().createCooldown(COAL_ORE_RESPAWN, 300000L);
     }
 
     public void spawnIron()
@@ -303,6 +313,16 @@ public class OreSpawner
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void handleOreRespawn(CooldownCompletedEvent event)
+    {
+        if (event.getName().equals(COAL_ORE_RESPAWN))
+        {
+            spawnCoal();
+            Cooldown.getInstance().createCooldown(COAL_ORE_RESPAWN, 300000L);
         }
     }
 

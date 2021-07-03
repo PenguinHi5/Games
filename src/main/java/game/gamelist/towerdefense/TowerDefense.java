@@ -2,6 +2,7 @@ package game.gamelist.towerdefense;
 
 import core.minecraft.combat.DeathMessageType;
 import core.minecraft.command.CommandManager;
+import core.minecraft.common.utils.SystemUtil;
 import core.minecraft.cooldown.event.CooldownCompletedEvent;
 import core.minecraft.damage.DamageManager;
 import core.minecraft.hologram.HologramManager;
@@ -14,10 +15,12 @@ import core.minecraft.world.config.MapConfig;
 import game.GameManager;
 import game.TeamGame;
 import game.common.ColorTeamNames;
+import game.common.ElapsedTimeTracker;
 import game.gamelist.towerdefense.block.BlockProtection;
 import game.gamelist.towerdefense.ore.OreSpawner;
 import game.gamelist.towerdefense.region.TowerDefenseRegionManager;
 import game.gamelist.towerdefense.tower.TowerController;
+import game.gamelist.towerdefense.wither.WitherController;
 import game.gamestate.GameState;
 import game.gamestate.event.ChooseNextGameEvent;
 import game.gamestate.event.GameStateChangeEvent;
@@ -35,6 +38,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +52,7 @@ public class TowerDefense extends TeamGame
     public BlockProtection _blockProtection;
     public TowerDefenseRegionManager _towerDefenseRegionManager;
     public TowerDefenseRespawnManager _towerDefenseRespawnManager;
+    public ElapsedTimeTracker elapsedTimeTracker;
 
     public TowerDefense(JavaPlugin plugin, CommandManager commandManager, GameManager gameManager, GameSettingsManager gameSettingsManager,
                         ScoreManager scoreManager, SoundManager soundManager, DamageManager damageManager, HologramManager hologramManager,
@@ -158,6 +163,7 @@ public class TowerDefense extends TeamGame
         scoreboard.updateLine(10, "");
         scoreboard.updateLine(9, ColorTeamNames.values()[0].textColor.toString() + ChatColor.BOLD + ColorTeamNames.values()[0].name.toUpperCase() + " TEAM");
 
+        // Tower health bars
         scoreboard.updateLine(8, _towerController.getTeam1TowerHealthBar());
         scoreboard.updateLine(7, "☠☠☠");
         scoreboard.updateLine(6, "");
@@ -165,8 +171,19 @@ public class TowerDefense extends TeamGame
         scoreboard.updateLine(4, _towerController.getTeam2TowerHealthBar());
         scoreboard.updateLine(3, "☠☠☠");
         scoreboard.updateLine(2, "");
-        scoreboard.updateLine(1, "");
-        scoreboard.updateLine(0, "");
+
+        // Time Elapsed
+        scoreboard.updateLine(1, ChatColor.YELLOW + ChatColor.BOLD.toString() + "Time Elapsed");
+        if (elapsedTimeTracker == null)
+        {
+            scoreboard.updateLine(0, "00:00");
+        }
+        else
+        {
+            long elapsedTime = elapsedTimeTracker.getTime();
+            scoreboard.updateLine(0, String.format("%02d", elapsedTime / 60000) + ":" + String.format("%02d", elapsedTime / 1000 % 60));
+        }
+
         return scoreboard;
     }
 
@@ -240,6 +257,21 @@ public class TowerDefense extends TeamGame
                 player.getInventory().setBoots(armor[3]);
                 player.getInventory().addItem(new ItemStack(Material.STONE_SWORD, 1), new ItemStack(Material.STONE_PICKAXE, 1));
             }
+        }
+    }
+
+    @EventHandler
+    public void startElapsedTimeTracker(GameStateChangeEvent event)
+    {
+        if (event.getNewGameState() == GameState.IN_GAME && _gameManager.getCurrentGame() == this)
+        {
+            elapsedTimeTracker = new ElapsedTimeTracker(getPlugin());
+            elapsedTimeTracker.start();
+
+            // TODO !!!FOR TESTING ONLY!!!
+            WitherController controller = new WitherController(this);
+            controller.spawnTeam1Wither();
+            controller.spawnTeam2Wither();
         }
     }
 

@@ -13,6 +13,7 @@ game\team\TeamManager.class
 game\common\RandomTeamNames.class
 game\gamelist\towerdefense\ore\OreSpawner.class
 game\gamestate\event\GameStartEvent.class
+game\common\ElapsedTimeTracker.class
 game\gamelist\towerdefense\block\BlockProtection.class
 game\gamelist\towerdefense\ore\OreSpawner$1.class
 game\gamelist\towerdefense\region\TowerDefenseRegionManager.class
